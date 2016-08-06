@@ -20,7 +20,7 @@ server.bind("tcp://*:1928")
 
 def handle_packet(p):
     if msg_check_digest(p):
-        with open("/tmp/foo", "a") as pipe:
+        with open("dummy.out", "a") as pipe:
             pipe.write(json.dumps(p[0]) + "\n")
     print(p)
 

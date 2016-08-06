@@ -7,12 +7,17 @@ import zmq
 import json
 import hmac, hashlib
 
+# Note: replay attacks
+
 class PZClient:
     def __init__(self, configfile=False):
         if configfile:
-            self.secret = self.read_secret(configfile)
+            self.read_config(configfile)
         else:
             self.secret = 'shared-secret-here'
+            self.server_port = 5667
+            self.server_address = '127.0.0.1'
+            self.debug = False
 
     def read_secret(self, filename):
         with open(filename, "r") as f:
@@ -34,5 +39,5 @@ class PZClient:
         client.connect('tcp://localhost:1928')
         client.send(json.dumps([ packet, self.payload_digest(packet) ]))
 
-pz = PZClient(
+pz = PZClient()
 pz.send(sys.argv)
