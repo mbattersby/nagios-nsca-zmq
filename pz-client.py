@@ -5,6 +5,7 @@ from __future__ import with_statement
 import sys
 import zmq
 import json
+import time
 import hmac, hashlib
 
 # Note: replay attacks
@@ -34,10 +35,14 @@ class PZClient:
         digester.update(json.dumps(x))
         return digester.hexdigest()
 
-    def send(self, packet):
+    def send(self, payload):
+        packet = [ payload, time.time() ]
+        digest = self.payload_digest(packet)
+        packet.append(digest)
+
         client = zmq.Context(1).socket(zmq.PUSH)
         client.connect('tcp://localhost:1928')
-        client.send(json.dumps([ packet, self.payload_digest(packet) ]))
+        client.send(json.dumps(packet))
 
 pz = PZClient()
 pz.send(sys.argv)
